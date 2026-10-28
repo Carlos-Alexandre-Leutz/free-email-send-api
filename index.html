@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>free.email.sender - API Gratuita de E-mail por Alexandre Leutz</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              accent: '#10b981',
+              emerald: '#059669',
+              dark: '#0b0f19',
+              card: '#111827',
+              border: '#1f2937'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    body {
+      background-color: #0b0f19;
+      color: #f3f4f6;
+    }
+    .glow-effect {
+      box-shadow: 0 0 50px -10px rgba(99, 102, 241, 0.25);
+    }
+    .glow-emerald {
+      box-shadow: 0 0 50px -10px rgba(16, 185, 129, 0.25);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #111827;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #374151;
+      border-radius: 3px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #4b5563;
+    }
+  </style>
+</head>
+<body class="font-sans antialiased bg-[#0b0f19] text-gray-100 min-h-screen flex flex-col justify-between selection:bg-brand-500 selection:text-white">
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- HEADER / NAVBAR -->
+  <header class="sticky top-0 z-40 w-full backdrop-blur-md bg-[#0b0f19]/80 border-b border-gray-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <a href="#" class="flex items-center gap-3 group">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 to-emerald-400 flex items-center justify-center text-white shadow-lg group-hover:scale-105 transition-transform">
+          <i class="fa-solid fa-paper-plane text-sm"></i>
+        </div>
+        <span class="font-mono font-bold text-lg tracking-tight text-white">
+          free<span class="text-brand-500">.email.</span>sender
+        </span>
+      </a>
+
+      <!-- Desktop Nav -->
+      <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-400">
+        <a href="#como-funciona" class="hover:text-white transition-colors">Como Funciona</a>
+        <a href="#playground" class="hover:text-white transition-colors">Documentação & Playground</a>
+        <a href="#recursos" class="hover:text-white transition-colors">Vantagens</a>
+        <a href="#autor" class="hover:text-white transition-colors">Sobre o Criador</a>
+      </nav>
+
+      <div class="flex items-center gap-3">
+        <button onclick="openModal('donate-modal')" class="hidden sm:inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 transition-all">
+          <i class="fa-solid fa-heart text-xs text-emerald-400 animate-pulse"></i>
+          Apoiar Projeto
+        </button>
+        <button onclick="openModal('signup-modal')" class="px-4 py-2 text-xs font-semibold rounded-lg bg-brand-600 text-white hover:bg-brand-500 shadow-md shadow-brand-600/30 hover:shadow-brand-500/50 transition-all">
+          Criar Token Grátis
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO SECTION -->
+    <section class="relative pt-12 pb-20 lg:pt-20 lg:pb-28 overflow-hidden">
+      <!-- Background Ambient Glow -->
+      <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-brand-600/15 blur-[120px] rounded-full pointer-events-none"></div>
+      <div class="absolute top-1/3 left-1/3 w-[300px] h-[200px] bg-emerald-500/10 blur-[100px] rounded-full pointer-events-none"></div>
+
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+        <!-- Tag Creator badge -->
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-800/80 border border-gray-700/60 text-xs font-medium text-gray-300 mb-6 backdrop-blur-sm">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+          <span>Projeto Open-Community criado por <strong class="text-white">Alexandre Leutz</strong></span>
+        </div>
+
+        <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-white max-w-4xl mx-auto leading-tight">
+          Envie e-mails do seu portfólio <br class="hidden sm:inline">
+          <span class="bg-gradient-to-r from-brand-500 via-indigo-400 to-emerald-400 bg-clip-text text-transparent">
+            sem complicações e 100% grátis
+          </span>
+        </h1>
+
+        <p class="mt-6 text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
+          Ideal para formulários de contato, portfólios e pequenos projetos que não possuem alto volume de envio. Esqueça configurações complexas de DNS, DKIM e planos pagos.
+        </p>
+
+        <!-- CTA Buttons -->
+        <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <button onclick="openModal('signup-modal')" class="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-semibold shadow-lg shadow-brand-600/25 hover:shadow-brand-500/40 transition-all flex items-center justify-center gap-2 text-base">
+            <i class="fa-solid fa-key"></i>
+            Gerar Token de Acesso
+          </button>
+          <a href="#playground" class="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-gray-800/80 hover:bg-gray-700 border border-gray-700 text-gray-200 font-semibold transition-all flex items-center justify-center gap-2 text-base">
+            <i class="fa-solid fa-code"></i>
+            Ver Exemplo de API
+          </a>
+          <button onclick="openModal('donate-modal')" class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 font-semibold transition-all flex items-center justify-center gap-2 text-base">
+            <i class="fa-solid fa-hand-holding-heart"></i>
+            Apoie o Projeto
+          </button>
+        </div>
+
+        <!-- Metric Badges -->
+        <div class="mt-14 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto text-left">
+          <div class="p-4 rounded-xl bg-gray-900/60 border border-gray-800/80 backdrop-blur-sm">
+            <p class="text-2xl font-bold text-white font-mono">0 R$</p>
+            <p class="text-xs text-gray-400">Gratuito para sempre</p>
+          </div>
+          <div class="p-4 rounded-xl bg-gray-900/60 border border-gray-800/80 backdrop-blur-sm">
+            <p class="text-2xl font-bold text-emerald-400 font-mono">0 Registros</p>
+            <p class="text-xs text-gray-400">Zero retenção de dados</p>
+          </div>
+          <div class="p-4 rounded-xl bg-gray-900/60 border border-gray-800/80 backdrop-blur-sm">
+            <p class="text-2xl font-bold text-white font-mono">1 Request</p>
+            <p class="text-xs text-gray-400">Integração super rápida</p>
+          </div>
+          <div class="p-4 rounded-xl bg-gray-900/60 border border-gray-800/80 backdrop-blur-sm">
+            <p class="text-2xl font-bold text-indigo-400 font-mono">Sem DNS</p>
+            <p class="text-xs text-gray-400">Não exige SPF/DKIM</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- O PROBLEMA X A SOLUÇÃO -->
+    <section id="como-funciona" class="py-20 bg-gray-900/40 border-y border-gray-800/80">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+          <h2 class="text-xs font-semibold text-brand-500 uppercase tracking-widest">Por que criamos isso?</h2>
+          <p class="mt-2 text-3xl font-bold text-white">Serviços tradicionais não foram feitos para portfólios simples</p>
+          <p class="mt-4 text-gray-400">
+            Se você só quer receber a mensagem que um cliente digitou na aba "Fale Comigo" do seu site, você não precisa de um painel corporativo complexo.
+          </p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8 items-stretch">
+          <!-- O Modelo Tradicional -->
+          <div class="p-8 rounded-2xl bg-red-950/10 border border-red-900/30 relative">
+            <div class="w-10 h-10 rounded-lg bg-red-500/10 text-red-400 flex items-center justify-center mb-6">
+              <i class="fa-solid fa-triangle-exclamation text-lg"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-3">O Modelo Tradicional (SendGrid, AWS SES, Mailgun)</h3>
+            <ul class="space-y-3 text-sm text-gray-400">
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-xmark text-red-400 mt-1"></i>
+                <span>Exige cartão de crédito e cadastros demorados com verificação de identidade.</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-xmark text-red-400 mt-1"></i>
+                <span>Obrigatório configurar registros DNS complexos (TXT, CNAME, SPF, DKIM, DMARC).</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-xmark text-red-400 mt-1"></i>
+                <span>Planos que cobram mensalidade ou expiram créditos após período de teste.</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-xmark text-red-400 mt-1"></i>
+                <span>Excesso de burocracia para quem só quer receber 10 e-mails por mês.</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- A Solução free.email.sender -->
+          <div class="p-8 rounded-2xl bg-brand-500/5 border border-brand-500/30 relative glow-effect">
+            <div class="w-10 h-10 rounded-lg bg-brand-500/20 text-brand-400 flex items-center justify-center mb-6">
+              <i class="fa-solid fa-bolt text-lg"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-3">A Solução free.email.sender</h3>
+            <ul class="space-y-3 text-sm text-gray-300">
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-check text-emerald-400 mt-1"></i>
+                <span><strong>Cadastro em 30 segundos:</strong> Cadastre seu e-mail (ex: <code class="text-brand-400">seuemail@gmail.com</code>).</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-check text-emerald-400 mt-1"></i>
+                <span><strong>Token Instantâneo:</strong> Receba uma chave para usar diretamente nas requisições do seu site.</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-check text-emerald-400 mt-1"></i>
+                <span><strong>Resposta Direta:</strong> Respostas do cliente vão diretamente para o e-mail cadastrado.</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-check text-emerald-400 mt-1"></i>
+                <span><strong>100% Gratuito:</strong> Feito por dev para dev, sem cobrança oculta.</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DOCUMENTAÇÃO E PLAYGROUND INTERATIVO -->
+    <section id="playground" class="py-20">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto mb-12">
+          <h2 class="text-xs font-semibold text-emerald-400 uppercase tracking-widest">Documentação Rápida</h2>
+          <p class="text-3xl font-bold text-white mt-2">API Playground & Simulação em Tempo Real</p>
+          <p class="text-gray-400 mt-3 text-sm sm:text-base">
+            Endpoint único em <code class="bg-gray-800 text-brand-400 px-2 py-0.5 rounded font-mono">POST https://api.freeemailsender.com/v1/send</code>
+          </p>
+        </div>
+
+        <div class="grid lg:grid-cols-12 gap-8 items-start">
+          
+          <!-- Lado Esquerdo: Simulador e Parâmetros -->
+          <div class="lg:col-span-6 space-y-6">
+            <!-- Parameter explanation card -->
+            <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6">
+              <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-list-check text-brand-500"></i> Parâmetros Aceitos
+              </h3>
+              
+              <div class="space-y-4 text-xs sm:text-sm">
+                <div class="p-3 rounded-lg bg-gray-950 border border-gray-800">
+                  <div class="flex items-center justify-between font-mono font-bold">
+                    <span class="text-brand-400">token</span>
+                    <span class="text-red-400 text-xs">Obrigatório</span>
+                  </div>
+                  <p class="text-gray-400 mt-1">Chave secreta gerada após realizar o cadastro gratuito no serviço.</p>
+                </div>
+
+                <div class="p-3 rounded-lg bg-gray-950 border border-gray-800">
+                  <div class="flex items-center justify-between font-mono font-bold">
+                    <span class="text-brand-400">to</span>
+                    <span class="text-red-400 text-xs">Obrigatório</span>
+                  </div>
+                  <p class="text-gray-400 mt-1">E-mail de quem vai receber a mensagem (pode ser o seu próprio e-mail ou do cliente).</p>
+                </div>
+
+                <div class="p-3 rounded-lg bg-gray-950 border border-gray-800">
+                  <div class="flex items-center justify-between font-mono font-bold">
+                    <span class="text-brand-400">subject</span>
+                    <span class="text-red-400 text-xs">Obrigatório</span>
+                  </div>
+                  <p class="text-gray-400 mt-1">Assunto do e-mail (ex: "Novo Contato do Portfólio").</p>
+                </div>
+
+                <div class="p-3 rounded-lg bg-gray-950 border border-gray-800">
+                  <div class="flex items-center justify-between font-mono font-bold">
+                    <span class="text-brand-400">message</span>
+                    <span class="text-red-400 text-xs">Obrigatório</span>
+                  </div>
+                  <p class="text-gray-400 mt-1">Texto da mensagem. Aceita texto puro ou HTML simples (sem tags de imagem <code class="text-gray-300">&lt;img&gt;</code> por motivos de segurança).</p>
+                </div>
+
+                <div class="p-3 rounded-lg bg-gray-950 border border-gray-800">
+                  <div class="flex items-center justify-between font-mono font-bold">
+                    <span class="text-brand-400">cco</span>
+                    <span class="text-emerald-400 text-xs">Opcional (boolean)</span>
+                  </div>
+                  <p class="text-gray-400 mt-1">Se <code class="text-emerald-400">true</code>, envia uma Cópia Oculta para o e-mail que você usou no cadastro.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Anti-Spam warning -->
+            <div class="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-start gap-3">
+              <i class="fa-solid fa-shield-halved text-amber-400 mt-1 text-lg"></i>
+              <div class="text-xs text-amber-200/90 leading-relaxed">
+                <strong class="text-amber-300 block mb-0.5">Política Anti-Spam Rigorosa</strong>
+                Não é permitido o uso para spam, phishing ou conteúdo impróprio/ilegal. Contas que descumprirem essa regra serão banidas permanentemente sem aviso prévio.
+              </div>
+            </div>
+          </div>
+
+          <!-- Lado Direito: Editor / Code Snippet & Simulator -->
+          <div class="lg:col-span-6 bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden shadow-2xl flex flex-col">
+            
+            <!-- Code Tab Header -->
+            <div class="bg-gray-950 border-b border-gray-800 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full bg-red-500/80 inline-block"></span>
+                <span class="w-3 h-3 rounded-full bg-yellow-500/80 inline-block"></span>
+                <span class="w-3 h-3 rounded-full bg-green-500/80 inline-block"></span>
+                <span class="ml-2 text-xs font-mono text-gray-400">request.json</span>
+              </div>
+
+              <div class="flex items-center gap-1 bg-gray-900 p-1 rounded-lg border border-gray-800 text-xs">
+                <button onclick="switchTab('js')" id="tab-js" class="tab-btn px-2.5 py-1 rounded-md text-white bg-brand-600 font-mono transition-all">JavaScript</button>
+                <button onclick="switchTab('curl')" id="tab-curl" class="tab-btn px-2.5 py-1 rounded-md text-gray-400 hover:text-white font-mono transition-all">cURL</button>
+                <button onclick="switchTab('python')" id="tab-python" class="tab-btn px-2.5 py-1 rounded-md text-gray-400 hover:text-white font-mono transition-all">Python</button>
+              </div>
+            </div>
+
+            <!-- Code Display Block -->
+            <div class="p-4 bg-[#0d1117] font-mono text-xs sm:text-sm text-gray-300 relative custom-scrollbar overflow-x-auto min-h-[220px]">
+              <button onclick="copyCurrentCode()" class="absolute top-3 right-3 px-2.5 py-1 rounded bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs flex items-center gap-1.5 transition-all border border-gray-700">
+                <i class="fa-regular fa-copy"></i>
+                <span>Copiar</span>
+              </button>
+
+              <pre id="code-js" class="code-snippet"><code><span class="text-purple-400">fetch</span>(<span class="text-emerald-300">'https://api.freeemailsender.com/v1/send'</span>, {
+  <span class="text-indigo-300">method</span>: <span class="text-emerald-300">'POST'</span>,
+  <span class="text-indigo-300">headers</span>: { <span class="text-emerald-300">'Content-Type'</span>: <span class="text-emerald-300">'application/json'</span> },
+  <span class="text-indigo-300">body</span>: <span class="text-yellow-300">JSON</span>.<span class="text-purple-400">stringify</span>({
+    <span class="text-indigo-300">"token"</span>: <span class="text-emerald-300">"SEU_TOKEN_AQUI"</span>,
+    <span class="text-indigo-300">"to"</span>: <span class="text-emerald-300">"leutzeleutz@gmail.com"</span>,
+    <span class="text-indigo-300">"subject"</span>: <span class="text-emerald-300">"Teste oficial da API de E-mail"</span>,
+    <span class="text-indigo-300">"message"</span>: <span class="text-emerald-300">"Olá! Este é um teste real do meu portfólio"</span>,
+    <span class="text-indigo-300">"cco"</span>: <span class="text-amber-400">true</span>
+  })
+})
+.<span class="text-purple-400">then</span>(<span class="text-orange-300">res</span> => <span class="text-orange-300">res</span>.<span class="text-purple-400">json</span>())
+.<span class="text-purple-400">then</span>(<span class="text-orange-300">data</span> => <span class="text-yellow-300">console</span>.<span class="text-purple-400">log</span>(<span class="text-orange-300">data</span>));</code></pre>
+
+              <pre id="code-curl" class="code-snippet hidden"><code>curl -X POST https://api.freeemailsender.com/v1/send \
+  -H "Content-Type: application/json" \
+  -d '{
+    "token": "SEU_TOKEN_AQUI",
+    "to": "leutzeleutz@gmail.com",
+    "subject": "Teste oficial da API de E-mail",
+    "message": "Olá! Este é um teste real do meu portfólio",
+    "cco": true
+  }'</code></pre>
+
+              <pre id="code-python" class="code-snippet hidden"><code><span class="text-purple-400">import</span> requests
+
+payload = {
+    <span class="text-emerald-300">"token"</span>: <span class="text-emerald-300">"SEU_TOKEN_AQUI"</span>,
+    <span class="text-emerald-300">"to"</span>: <span class="text-emerald-300">"leutzeleutz@gmail.com"</span>,
+    <span class="text-emerald-300">"subject"</span>: <span class="text-emerald-300">"Teste oficial da API de E-mail"</span>,
+    <span class="text-emerald-300">"message"</span>: <span class="text-emerald-300">"Olá! Este é um teste real do meu portfólio"</span>,
+    <span class="text-emerald-300">"cco"</span>: <span class="text-amber-400">True</span>
+}
+
+response = requests.post(<span class="text-emerald-300">'https://api.freeemailsender.com/v1/send'</span>, json=payload)
+<span class="text-purple-400">print</span>(response.json())</code></pre>
+            </div>
+
+            <!-- SIMULADOR AO VIVO (INTERATIVO) -->
+            <div class="p-5 bg-gray-950 border-t border-gray-800 space-y-4">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-gray-300 uppercase tracking-wider flex items-center gap-2">
+                  <i class="fa-solid fa-play text-emerald-400"></i> Testar Simulador da API
+                </span>
+                <span class="text-[10px] text-gray-500 font-mono">Status simulado</span>
+              </div>
+
+              <!-- Input Form for test -->
+              <div class="space-y-3 font-mono text-xs">
+                <div>
+                  <label class="block text-gray-400 mb-1">Para (to):</label>
+                  <input type="email" id="sim-to" value="leutzeleutz@gmail.com" class="w-full bg-gray-900 border border-gray-800 rounded px-3 py-2 text-gray-200 focus:outline-none focus:border-brand-500">
+                </div>
+                <div>
+                  <label class="block text-gray-400 mb-1">Assunto (subject):</label>
+                  <input type="text" id="sim-subject" value="Teste oficial da API de E-mail" class="w-full bg-gray-900 border border-gray-800 rounded px-3 py-2 text-gray-200 focus:outline-none focus:border-brand-500">
+                </div>
+                <div>
+                  <label class="block text-gray-400 mb-1">Mensagem (message):</label>
+                  <textarea id="sim-message" rows="2" class="w-full bg-gray-900 border border-gray-800 rounded px-3 py-2 text-gray-200 focus:outline-none focus:border-brand-500">Olá! Este é um teste real enviado através do site.</textarea>
+                </div>
+                <div class="flex items-center gap-2">
+                  <input type="checkbox" id="sim-cco" checked class="rounded border-gray-800 text-brand-600 focus:ring-0 accent-brand-600">
+                  <label for="sim-cco" class="text-gray-400 cursor-pointer">Enviar Cópia Oculta (cco: true)</label>
+                </div>
+              </div>
+
+              <button onclick="runApiSimulation()" id="sim-btn" class="w-full py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex items-center justify-center gap-2 transition-all">
+                <i class="fa-solid fa-paper-plane"></i> Simular Envio de Request
+              </button>
+
+              <!-- Simulator Output -->
+              <div id="sim-output" class="hidden p-3 rounded bg-black/60 border border-emerald-500/30 text-xs font-mono">
+                <div class="flex items-center justify-between text-emerald-400 font-bold mb-1">
+                  <span>HTTP/1.1 200 OK</span>
+                  <span class="text-[10px] text-gray-500">24ms</span>
+                </div>
+                <pre class="text-gray-300 text-[11px] overflow-x-auto" id="sim-json-response"></pre>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- RECURSOS E GARANTIAS -->
+    <section id="recursos" class="py-20 bg-gray-900/40 border-t border-gray-800">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+          <h2 class="text-xs font-semibold text-brand-500 uppercase tracking-widest">Nossos Princípios</h2>
+          <p class="text-3xl font-bold text-white mt-2">Transparência e Foco no Desenvolvedor</p>
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="p-6 rounded-2xl bg-gray-900 border border-gray-800 hover:border-gray-700 transition-all">
+            <div class="w-12 h-12 rounded-xl bg-brand-500/10 text-brand-400 flex items-center justify-center text-xl mb-4">
+              <i class="fa-solid fa-infinity"></i>
+            </div>
+            <h3 class="text-lg font-bold text-white mb-2">Gratuito Para Sempre</h3>
+            <p class="text-sm text-gray-400">
+              Desenvolvido voluntariamente para apoiar a comunidade de programadores sem necessidade de assinar planos pagos.
+            </p>
+          </div>
+
+          <div class="p-6 rounded-2xl bg-gray-900 border border-gray-800 hover:border-gray-700 transition-all">
+            <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xl mb-4">
+              <i class="fa-solid fa-user-shield"></i>
+            </div>
+            <h3 class="text-lg font-bold text-white mb-2">Privacidade Total</h3>
+            <p class="text-sm text-gray-400">
+              Nenhum dado do e-mail enviado ou recebido fica salvo nos nossos servidores. A request é processada e despachada na hora.
+            </p>
+          </div>
+
+          <div class="p-6 rounded-2xl bg-gray-900 border border-gray-800 hover:border-gray-700 transition-all">
+            <div class="w-12 h-12 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center text-xl mb-4">
+              <i class="fa-solid fa-plug"></i>
+            </div>
+            <h3 class="text-lg font-bold text-white mb-2">Plug and Play</h3>
+            <p class="text-sm text-gray-400">
+              Não precisa alterar registros de DNS no seu domínio nem criar conta de e-mail transacional corporativa.
+            </p>
+          </div>
+
+          <div class="p-6 rounded-2xl bg-gray-900 border border-gray-800 hover:border-gray-700 transition-all">
+            <div class="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-xl mb-4">
+              <i class="fa-solid fa-ban"></i>
+            </div>
+            <h3 class="text-lg font-bold text-white mb-2">Zero Spam</h3>
+            <p class="text-sm text-gray-400">
+              Sistemas de filtragem automática ativos para impedir envios abusivos e manter a reputação dos e-mails sempre alta.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SOBRE O CRIADOR (ALEXANDRE LEUTZ) -->
+    <section id="autor" class="py-20 relative overflow-hidden">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-gradient-to-r from-gray-900 via-gray-900/90 to-brand-950/40 border border-gray-800 rounded-3xl p-8 sm:p-12 relative overflow-hidden">
+          
+          <div class="grid lg:grid-cols-12 gap-8 items-center">
+            
+            <!-- Creator info -->
+            <div class="lg:col-span-7 space-y-6">
+              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-400 text-xs font-semibold">
+                <i class="fa-solid fa-code"></i> Criador & Idealizador
+              </div>
+
+              <h2 class="text-3xl sm:text-4xl font-extrabold text-white">
+                Olá! Sou o Alexandre Leutz
+              </h2>
+
+              <p class="text-gray-300 leading-relaxed text-sm sm:text-base">
+                Criei o <strong class="text-white">free.email.sender</strong> para resolver um problema recorrente que vejo diariamente na comunidade de tecnologia: desenvolvedores e estudantes criando portfólios incríveis, mas travando na hora de colocar um simples formulário de contato para funcionar sem gastar nada.
+              </p>
+
+              <p class="text-gray-400 leading-relaxed text-sm">
+                No meu canal do YouTube, compartilho conteúdos sobre engenharia de software, arquitetura de sistemas, dicas de carreira e desenvolvimento de projetos reais.
+              </p>
+
+              <div class="flex flex-wrap items-center gap-4 pt-2">
+                <a href="https://www.youtube.com/@alexandreleutz" target="_blank" rel="noopener noreferrer" class="px-5 py-3 rounded-xl bg-red-600 hover:bg-red-500 text-white font-semibold text-xs sm:text-sm flex items-center gap-2.5 transition-all shadow-lg shadow-red-600/20">
+                  <i class="fa-brands fa-youtube text-lg"></i>
+                  Canal no YouTube (@alexandreleutz)
+                </a>
+
+                <button onclick="openModal('donate-modal')" class="px-5 py-3 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 font-semibold text-xs sm:text-sm flex items-center gap-2 transition-all">
+                  <i class="fa-solid fa-coffee text-amber-400"></i>
+                  Pagar um Café / Doar
+                </button>
+              </div>
+            </div>
+
+            <!-- YouTube Channel Visual Card -->
+            <div class="lg:col-span-5 flex justify-center">
+              <div class="w-full max-w-sm rounded-2xl bg-gray-950 border border-gray-800 p-6 text-center space-y-4 glow-effect">
+                <div class="relative w-24 h-24 mx-auto rounded-full p-1 bg-gradient-to-tr from-brand-500 to-red-500">
+                  <div class="w-full h-full rounded-full bg-gray-900 flex items-center justify-center overflow-hidden">
+                    <i class="fa-solid fa-user-gear text-4xl text-gray-400"></i>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 class="text-lg font-bold text-white">Alexandre Leutz</h3>
+                  <p class="text-xs text-brand-400 font-mono">@alexandreleutz</p>
+                </div>
+
+                <div class="py-3 px-4 rounded-xl bg-gray-900/80 border border-gray-800 text-xs text-gray-300 space-y-1">
+                  <div class="flex justify-between">
+                    <span class="text-gray-400">Conteúdo:</span>
+                    <span class="text-white font-medium">Software Engineering</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-gray-400">Foco:</span>
+                    <span class="text-white font-medium">Arquitetura & Carreira</span>
+                  </div>
+                </div>
+
+                <a href="https://www.youtube.com/@alexandreleutz" target="_blank" class="block w-full py-2.5 rounded-lg bg-red-600/10 hover:bg-red-600/20 text-red-400 border border-red-600/30 text-xs font-semibold transition-all">
+                  <i class="fa-brands fa-youtube mr-1"></i> Inscrever-se no Canal
+                </a>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ SECTION -->
+    <section class="py-16 bg-gray-900/30 border-t border-gray-800">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-2xl font-bold text-center text-white mb-10">Dúvidas Frequentes</h2>
+
+        <div class="space-y-4">
+          <details class="group bg-gray-900 border border-gray-800 rounded-xl p-5 [&_summary::-webkit-details-marker]:hidden cursor-pointer">
+            <summary class="flex items-center justify-between font-semibold text-white">
+              <span>É realmente 100% gratuito? Há limitações?</span>
+              <span class="transition group-open:rotate-180"><i class="fa-solid fa-chevron-down text-xs text-gray-400"></i></span>
+            </summary>
+            <p class="mt-3 text-sm text-gray-400 leading-relaxed">
+              Sim, é totalmente gratuito! Ele foi desenvolvido para cobrir projetos de baixo volume (como portfólios pessoais e formulários de contato). Para evitar abusos e manter o serviço veloz para todos, existe apenas um limite de taxa (rate-limit) por IP.
+            </p>
+          </details>
+
+          <details class="group bg-gray-900 border border-gray-800 rounded-xl p-5 [&_summary::-webkit-details-marker]:hidden cursor-pointer">
+            <summary class="flex items-center justify-between font-semibold text-white">
+              <span>Como recebo a resposta do meu cliente?</span>
+              <span class="transition group-open:rotate-180"><i class="fa-solid fa-chevron-down text-xs text-gray-400"></i></span>
+            </summary>
+            <p class="mt-3 text-sm text-gray-400 leading-relaxed">
+              Quando alguém envia uma mensagem através da sua API com o parâmetro <code class="text-brand-400">to</code>, ou se responder ao e-mail recebido, a mensagem vai direto para o e-mail que você usou no momento do cadastro do seu Token.
+            </p>
+          </details>
+
+          <details class="group bg-gray-900 border border-gray-800 rounded-xl p-5 [&_summary::-webkit-details-marker]:hidden cursor-pointer">
+            <summary class="flex items-center justify-between font-semibold text-white">
+              <span>Posso enviar imagens na mensagem em HTML?</span>
+              <span class="transition group-open:rotate-180"><i class="fa-solid fa-chevron-down text-xs text-gray-400"></i></span>
+            </summary>
+            <p class="mt-3 text-sm text-gray-400 leading-relaxed">
+              Não. O corpo da mensagem aceita HTML simples (negrito, itálico, parágrafos, links simples), mas tags de imagem (<code class="text-brand-400">&lt;img&gt;</code>) e anexos pesados são desabilitados para prevenir rastreamento indevido e consumo excessivo de banda.
+            </p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-gray-800 bg-gray-950 py-12 text-xs text-gray-500">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+      <div class="flex items-center gap-3">
+        <div class="w-7 h-7 rounded-lg bg-brand-600 flex items-center justify-center text-white">
+          <i class="fa-solid fa-paper-plane text-xs"></i>
+        </div>
+        <span class="font-mono font-bold text-gray-300">free.email.sender</span>
+        <span>— Mantido por Alexandre Leutz</span>
+      </div>
+
+      <div class="flex items-center gap-6 text-gray-400">
+        <a href="https://www.youtube.com/@alexandreleutz" target="_blank" class="hover:text-white transition-colors flex items-center gap-1.5">
+          <i class="fa-brands fa-youtube text-red-500"></i> YouTube
+        </a>
+        <button onclick="openModal('donate-modal')" class="hover:text-emerald-400 transition-colors flex items-center gap-1.5">
+          <i class="fa-solid fa-heart text-emerald-500"></i> Doações
+        </button>
+      </div>
+
+      <p class="text-center md:text-right">
+        &copy; 2026 free.email.sender. Sem retenção de dados. Uso livre.
+      </p>
+    </div>
+  </footer>
+
+
+  <!-- MODAL: GERAR TOKEN / CADASTRO -->
+  <div id="signup-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-gray-900 border border-gray-800 rounded-2xl max-w-md w-full p-6 relative shadow-2xl animate-in fade-in zoom-in duration-200">
+      <button onclick="closeModal('signup-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+
+      <div class="text-center mb-6">
+        <div class="w-12 h-12 bg-brand-500/10 text-brand-400 rounded-xl flex items-center justify-center mx-auto mb-3 text-xl">
+          <i class="fa-solid fa-key"></i>
+        </div>
+        <h3 class="text-xl font-bold text-white">Criar Token de Acesso Grátis</h3>
+        <p class="text-xs text-gray-400 mt-1">Cadastre o e-mail que você usará para enviar mensagens.</p>
+      </div>
+
+      <form id="token-form" onsubmit="handleTokenSubmit(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-gray-300 mb-1">Seu Nome ou Nome do Projeto:</label>
+          <input type="text" required placeholder="Ex: Alexandre Leutz / Meu Portfólio" class="w-full bg-gray-950 border border-gray-800 rounded-lg px-3.5 py-2.5 text-sm text-gray-200 focus:outline-none focus:border-brand-500">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-gray-300 mb-1">E-mail de Cadastro (Remetente):</label>
+          <input type="email" id="modal-email" required placeholder="exemplo: minhaloja@gmail.com" class="w-full bg-gray-950 border border-gray-800 rounded-lg px-3.5 py-2.5 text-sm text-gray-200 focus:outline-none focus:border-brand-500">
+          <p class="text-[11px] text-gray-500 mt-1">Este e-mail receberá as respostas dos seus formulários.</p>
+        </div>
+
+        <button type="submit" class="w-full py-3 rounded-lg bg-brand-600 hover:bg-brand-500 text-white font-semibold text-sm transition-all shadow-lg shadow-brand-600/20">
+          Gerar Token Agora
+        </button>
+      </form>
+
+      <!-- Token Output Area -->
+      <div id="token-result" class="hidden mt-6 p-4 rounded-xl bg-gray-950 border border-brand-500/40 text-left space-y-3">
+        <div class="flex items-center justify-between text-xs text-emerald-400 font-semibold">
+          <span><i class="fa-solid fa-circle-check"></i> Token Gerado com Sucesso!</span>
+        </div>
+        <div>
+          <label class="block text-[11px] text-gray-400 mb-1">Sua Chave API (Token):</label>
+          <div class="flex items-center gap-2">
+            <input type="text" id="generated-token-input" readonly value="fes_live_98a7f21b3c4d5e" class="w-full bg-gray-900 border border-gray-800 rounded px-2.5 py-1.5 font-mono text-xs text-brand-300">
+            <button onclick="copyGeneratedToken()" class="px-3 py-1.5 rounded bg-brand-600 hover:bg-brand-500 text-white text-xs font-medium">
+              Copiar
+            </button>
+          </div>
+        </div>
+        <p class="text-[11px] text-gray-400">Guarde seu token em um local seguro ou variável de ambiente.</p>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- MODAL: DOAÇÕES / APOIO AO PROJETO -->
+  <div id="donate-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-gray-900 border border-gray-800 rounded-2xl max-w-md w-full p-6 relative shadow-2xl animate-in fade-in zoom-in duration-200">
+      <button onclick="closeModal('donate-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+
+      <div class="text-center mb-6">
+        <div class="w-12 h-12 bg-emerald-500/10 text-emerald-400 rounded-xl flex items-center justify-center mx-auto mb-3 text-xl">
+          <i class="fa-solid fa-heart"></i>
+        </div>
+        <h3 class="text-xl font-bold text-white">Apoie o free.email.sender</h3>
+        <p class="text-xs text-gray-400 mt-1">Ajude a manter a infraestrutura de servidores ativa e 100% gratuita para todos.</p>
+      </div>
+
+      <div class="bg-gray-950 border border-gray-800 rounded-xl p-5 text-center space-y-4">
+        <div class="text-xs font-semibold text-gray-300">Chave Pix para Contribuição Voluntária</div>
+        
+        <!-- QR Code Placeholder Visual -->
+        <div class="w-40 h-40 mx-auto bg-white p-2 rounded-lg flex items-center justify-center shadow-inner">
+          <svg class="w-full h-full text-gray-900" viewBox="0 0 100 100" fill="currentColor">
+            <!-- Simulated QR Code Pattern -->
+            <rect x="5" y="5" width="30" height="30" fill="black"/>
+            <rect x="10" y="10" width="20" height="20" fill="white"/>
+            <rect x="15" y="15" width="10" height="10" fill="black"/>
+            
+            <rect x="65" y="5" width="30" height="30" fill="black"/>
+            <rect x="70" y="10" width="20" height="20" fill="white"/>
+            <rect x="75" y="15" width="10" height="10" fill="black"/>
+
+            <rect x="5" y="65" width="30" height="30" fill="black"/>
+            <rect x="10" y="70" width="20" height="20" fill="white"/>
+            <rect x="15" y="75" width="10" height="10" fill="black"/>
+
+            <rect x="40" y="40" width="20" height="20" fill="black"/>
+            <rect x="45" y="10" width="10" height="25" fill="black"/>
+            <rect x="70" y="50" width="20" height="15" fill="black"/>
+            <rect x="40" y="70" width="15" height="20" fill="black"/>
+            <rect x="65" y="75" width="20" height="15" fill="black"/>
+          </svg>
+        </div>
+
+        <!-- Pix Copy Paste -->
+        <div>
+          <label class="block text-[11px] text-gray-400 mb-1">Chave Pix (E-mail / Copia e Cola):</label>
+          <div class="flex items-center gap-2">
+            <input type="text" id="pix-key" readonly value="alexandreleutz.doe@gmail.com" class="w-full bg-gray-900 border border-gray-800 rounded px-2.5 py-2 font-mono text-xs text-emerald-400 text-center">
+            <button onclick="copyPixKey()" class="px-3 py-2 rounded bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition-all">
+              Copiar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-4 text-center">
+        <p class="text-[11px] text-gray-500">Qualquer valor ajuda a manter os servidores ativos. Muito obrigado pelo apoio!</p>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- JAVASCRIPT / INTERACTIVITY -->
+  <script>
+    // Tab Switcher Logic
+    let activeTab = 'js';
+    function switchTab(tab) {
+      activeTab = tab;
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('bg-brand-600', 'text-white');
+        btn.classList.add('text-gray-400');
+      });
+      document.querySelectorAll('.code-snippet').forEach(code => code.classList.add('hidden'));
+
+      document.getElementById(`tab-${tab}`).classList.add('bg-brand-600', 'text-white');
+      document.getElementById(`tab-${tab}`).classList.remove('text-gray-400');
+      document.getElementById(`code-${tab}`).classList.remove('hidden');
+    }
+
+    // Copying current code snippet
+    function copyCurrentCode() {
+      let codeText = "";
+      if (activeTab === 'js') {
+        codeText = document.getElementById('code-js').innerText;
+      } else if (activeTab === 'curl') {
+        codeText = document.getElementById('code-curl').innerText;
+      } else if (activeTab === 'python') {
+        codeText = document.getElementById('code-python').innerText;
+      }
+      copyToClipboard(codeText, "Código copiado para a área de transferência!");
+    }
+
+    // API Simulator
+    function runApiSimulation() {
+      const btn = document.getElementById('sim-btn');
+      const output = document.getElementById('sim-output');
+      const jsonRes = document.getElementById('sim-json-response');
+
+      const toVal = document.getElementById('sim-to').value || 'leutzeleutz@gmail.com';
+      const subjectVal = document.getElementById('sim-subject').value || 'Teste oficial da API de E-mail';
+      const msgVal = document.getElementById('sim-message').value || 'Olá! Este é um teste real';
+      const ccoVal = document.getElementById('sim-cco').checked;
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> Processando envio...';
+
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Simular Envio de Request';
+        output.classList.remove('hidden');
+
+        const mockResponseBody = {
+          "success": true,
+          "status": 200,
+          "message": "E-mail enfileirado e enviado com sucesso!",
+          "data": {
+            "to": toVal,
+            "subject": subjectVal,
+            "cco_enabled": ccoVal,
+            "sent_at": new Date().toISOString(),
+            "tracking_id": "fes_" + Math.random().toString(36).substring(2, 10)
+          }
+        };
+
+        jsonRes.textContent = JSON.stringify(mockResponseBody, null, 2);
+        showToast("Sucesso! Request simulada com resposta 200 OK.");
+      }, 700);
+    }
+
+    // Modal Control
+    function openModal(id) {
+      document.getElementById(id).classList.remove('hidden');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    // Handle Mock Token Submit
+    function handleTokenSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('modal-email').value;
+      const tokenInput = document.getElementById('generated-token-input');
+      const randomHex = Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 8);
+      
+      tokenInput.value = `fes_token_${randomHex}`;
+      document.getElementById('token-result').classList.remove('hidden');
+      showToast(`Token gerado com sucesso para ${email}!`);
+    }
+
+    function copyGeneratedToken() {
+      const tokenVal = document.getElementById('generated-token-input').value;
+      copyToClipboard(tokenVal, "Token copiado com sucesso!");
+    }
+
+    function copyPixKey() {
+      const pixVal = document.getElementById('pix-key').value;
+      copyToClipboard(pixVal, "Chave Pix copiada!");
+    }
+
+    // Clipboard Fallback Helper
+    function copyToClipboard(text, message) {
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast(message);
+        }).catch(() => {
+          fallbackCopy(text, message);
+        });
+      } else {
+        fallbackCopy(text, message);
+      }
+    }
+
+    function fallbackCopy(text, message) {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.style.position = "fixed";
+      textArea.style.left = "-999999px";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        showToast(message);
+      } catch (err) {
+        showToast("Erro ao copiar text");
+      }
+      document.body.removeChild(textArea);
+    }
+
+    // Custom Toast Notification System
+    function showToast(msg) {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'pointer-events-auto bg-gray-900 border border-brand-500/50 text-white text-xs px-4 py-3 rounded-xl shadow-xl flex items-center gap-2 transform transition-all duration-300 translate-y-2 opacity-0';
+      toast.innerHTML = `<i class="fa-solid fa-circle-info text-brand-400"></i> <span>${msg}</span>`;
+      
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.classList.remove('translate-y-2', 'opacity-0');
+      }, 10);
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+  </script>
+</body>
+</html>
